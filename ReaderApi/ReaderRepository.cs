@@ -10,7 +10,7 @@ namespace ReaderApi
 {
     public class ReaderRepository
     {
-        static string connectionString = "";
+        static string connectionString = "server=127.0.0.1;uid=root;pwd=Yeet1234!;database=ReaderDB";
 
 
         private MySqlConnection conn = new MySqlConnection(connectionString);
@@ -33,40 +33,48 @@ namespace ReaderApi
             {
                 throw ex;
             }
-            conn.Close();
+            finally
+            {
+                conn.Close();
+            }
         }
 
         public IEnumerable<Reader> GetAllReaders()
         {
-            string sqlQuery = "SELECT * FROM Reader";
+            string sqlQuery = "SELECT * FROM Reader;";
             List<Reader> readers = new List<Reader>();
             try
             {
+
                 conn.Open();
                 cmd = new MySqlCommand(sqlQuery, conn);
-                MySqlDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    foreach (DataRow row in rdr)
-                    {
-                        Reader readerObj = new Reader();
-                        readerObj.ReaderName = row["ReaderName"].ToString();
-                        readerObj.ReaderNumber = row["ReaderNumber"].ToString();
-                        readerObj.Placement = row["Placement"].ToString();
-                        readerObj.Reading = row["Reading"].ToString();
-                        readerObj.ReaderUnit = row["ReaderUnit"].ToString();
-                        readerObj.Date = row["Date"].ToString();
+                cmd.ExecuteNonQuery();
+                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
 
-                        readers.Add(readerObj);
-                    }
+                foreach (DataRow row in dt.Rows)
+                {
+                    Reader readerObj = new Reader();
+                    readerObj.ReaderName = row["ReaderName"].ToString();
+                    readerObj.ReaderNumber = row["ReaderNumber"].ToString();
+                    readerObj.Placement = row["Placement"].ToString();
+                    readerObj.Reading = row["Reading"].ToString();
+                    readerObj.ReaderUnit = row["ReaderUnit"].ToString();
+                    readerObj.Date = row["Date"].ToString();
+
+                    readers.Add(readerObj);
                 }
-                rdr.Close();
+
             }
             catch (MySqlException ex)
             {
                 throw ex;
             }
-            conn.Close();
+            finally
+            {
+                conn.Close();
+            }
             return readers;
         }
     }
