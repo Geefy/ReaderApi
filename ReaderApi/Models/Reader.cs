@@ -13,5 +13,6 @@ namespace ReaderApi
         public string Reading;
         public string ReaderUnit;
         public string Date;
+        public string Location;
     }
 }

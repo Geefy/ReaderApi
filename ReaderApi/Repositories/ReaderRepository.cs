@@ -10,7 +10,7 @@ namespace ReaderApi
 {
     public class ReaderRepository
     {
-        static string connectionString = "server=127.0.0.1;uid=root;pwd=Yeet1234!;database=ReaderDB";
+        static string connectionString = "server=127.0.0.1;uid=root;pwd=root;database=ReaderDB";
 
 
         private MySqlConnection conn = new MySqlConnection(connectionString);
@@ -62,6 +62,48 @@ namespace ReaderApi
                     readerObj.Reading = row["Reading"].ToString();
                     readerObj.ReaderUnit = row["ReaderUnit"].ToString();
                     readerObj.Date = row["Date"].ToString();
+                    readerObj.Location = row["Location"].ToString();
+
+                    readers.Add(readerObj);
+                }
+
+            }
+            catch (MySqlException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return readers;
+        }
+
+        public IEnumerable<Reader> GetReadersByLocation(string locationName)
+        {
+            string sqlQuery = "SELECT * FROM Reader WHERE Location = @LocationName;";
+            List<Reader> readers = new List<Reader>();
+            try
+            {
+
+                conn.Open();
+                cmd = new MySqlCommand(sqlQuery, conn);
+                cmd.Parameters.AddWithValue("@LocationName", locationName);
+                cmd.ExecuteNonQuery();
+                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    Reader readerObj = new Reader();
+                    readerObj.ReaderName = row["ReaderName"].ToString();
+                    readerObj.ReaderNumber = row["ReaderNumber"].ToString();
+                    readerObj.Placement = row["Placement"].ToString();
+                    readerObj.Reading = row["Reading"].ToString();
+                    readerObj.ReaderUnit = row["ReaderUnit"].ToString();
+                    readerObj.Date = row["Date"].ToString();
+                    readerObj.Location = row["Location"].ToString();
 
                     readers.Add(readerObj);
                 }
@@ -79,3 +121,4 @@ namespace ReaderApi
         }
     }
 }
+

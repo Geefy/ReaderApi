@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ReaderApi.Repositories;
 
 namespace ReaderApi
 {
@@ -27,6 +28,7 @@ namespace ReaderApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ReaderRepository>();
+            services.AddScoped<LocationRepository>();
             services.AddControllers().AddNewtonsoftJson();
             services.AddControllers();
         }

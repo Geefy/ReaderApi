@@ -25,7 +25,7 @@ namespace ReaderApi.Controllers
             try
             {
 
-               ReaderDTO reader = data.ToObject<ReaderDTO>();
+                ReaderDTO reader = data.ToObject<ReaderDTO>();
                 this._readerRepository.Update(reader);
                 return NoContent();
             }
@@ -43,6 +43,27 @@ namespace ReaderApi.Controllers
                 var allReaders = this._readerRepository.GetAllReaders();
 
                 return Ok(allReaders);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error message: " + ex.Message);
+            }
+        }
+
+        [HttpGet("{locationName}")]
+        public IActionResult GetReaderByLocation(string locationName)
+        {
+            try
+            {
+                var allReaders = this._readerRepository.GetReadersByLocation(locationName);
+                if (allReaders == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(allReaders);
+                }
             }
             catch (Exception ex)
             {
