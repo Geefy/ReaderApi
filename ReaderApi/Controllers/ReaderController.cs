@@ -35,6 +35,21 @@ namespace ReaderApi.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult CreateReader([FromBody] JObject data)
+        {
+            try
+            {
+                Reader reader = data.ToObject<Reader>();
+                this._readerRepository.Create(reader);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error message: " + ex.Message);
+            }
+        }
+
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -56,6 +71,27 @@ namespace ReaderApi.Controllers
             try
             {
                 var allReaders = this._readerRepository.GetReadersByLocation(locationName);
+                if (allReaders == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(allReaders);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error message: " + ex.Message);
+            }
+        }
+
+        [HttpGet("history/{readerNumber}")]
+        public IActionResult GetReaderHistoryByNumber(string readerNumber)
+        {
+            try
+            {
+                var allReaders = this._readerRepository.GetReaderHistoryByName(readerNumber);
                 if (allReaders == null)
                 {
                     return NotFound();

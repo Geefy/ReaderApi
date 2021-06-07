@@ -39,6 +39,11 @@ namespace ReaderApi
             }
         }
 
+        public void Create(Reader reader)
+        {
+
+        }
+
         public IEnumerable<Reader> GetAllReaders()
         {
             string sqlQuery = "SELECT * FROM Reader;";
@@ -111,6 +116,45 @@ namespace ReaderApi
             }
             catch (MySqlException ex)
             {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return readers;
+        }
+
+        public IEnumerable<Reader> GetReaderHistoryByName(string readerNumber)
+        {
+            string sqlQuery = "SELECT * FROM ReaderHistory WHERE ReaderNumber = @ReaderNumber;";
+            List<Reader> readers = new List<Reader>();
+            try
+            {
+                conn.Open();
+                cmd = new MySqlCommand(sqlQuery, conn);
+                cmd.Parameters.AddWithValue("@ReaderNumber", readerNumber);
+                cmd.ExecuteNonQuery();
+                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                foreach (DataRow row in dt.Rows)
+                {
+                    Reader readerObj = new Reader();
+                    readerObj.ReaderName = row["ReaderName"].ToString();
+                    readerObj.ReaderNumber = row["ReaderNumber"].ToString();
+                    readerObj.Placement = row["Placement"].ToString();
+                    readerObj.Reading = row["Reading"].ToString();
+                    readerObj.ReaderUnit = row["ReaderUnit"].ToString();
+                    readerObj.Date = row["Date"].ToString();
+                    readerObj.Location = row["Location"].ToString();
+
+                    readers.Add(readerObj);
+                }
+            }
+            catch (Exception ex)
+            {
+
                 throw ex;
             }
             finally
